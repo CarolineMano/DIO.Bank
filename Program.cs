@@ -33,7 +33,8 @@ namespace DIO.Bank
 						break;
 
 					default:
-						throw new ArgumentOutOfRangeException();
+						Console.WriteLine("Por favor, digite uma opção válida");
+						break;
 				}
 
 				opcaoUsuario = ObterOpcaoUsuario();
@@ -45,36 +46,55 @@ namespace DIO.Bank
 
         private static void Transferir()
         {
-            Console.Write("Digite o número da conta de origem: ");
-			int indiceContaOrigem = int.Parse(Console.ReadLine());
+			if(!VerificarListaContas())
+			{
+				return;
+			}
+			
+			int indiceContaOrigem = ObterOpcaoInteiro("Digite o número da conta de origem: ");
 
-            Console.Write("Digite o número da conta de destino: ");
-			int indiceContaDestino = int.Parse(Console.ReadLine());
+			if(!ValidarConta(indiceContaOrigem))
+				return;
+			
+			int indiceContaDestino = ObterOpcaoInteiro("Digite o número da conta de destino: ");
+			if(!ValidarConta(indiceContaDestino))
+				return;			
 
-			Console.Write("Digite o valor a ser transferido: ");
-			double valorTransferencia = double.Parse(Console.ReadLine());
+			double valorTransferencia = ObterOpcaoDouble("Digite o valor a ser transferido: ");
 
             listContas[indiceContaOrigem].Transferir(valorTransferencia, listContas[indiceContaDestino]);
         }
 
         private static void Depositar()
         {
-            Console.Write("Digite o número da conta: ");
-			int indiceConta = int.Parse(Console.ReadLine());
+			if(!VerificarListaContas())
+			{
+				return;
+			}
 
-			Console.Write("Digite o valor a ser depositado: ");
-			double valorDeposito = double.Parse(Console.ReadLine());
+			int indiceConta = ObterOpcaoInteiro("Digite o número da conta: ");
+			
+			if(!ValidarConta(indiceConta))
+				return;
+
+			double valorDeposito = ObterOpcaoDouble("Digite o valor a ser depositado: ");
 
             listContas[indiceConta].Depositar(valorDeposito);
         }
 
         private static void Sacar()
         {
-            Console.Write("Digite o número da conta: ");
-			int indiceConta = int.Parse(Console.ReadLine());
+			if(!VerificarListaContas())
+			{
+				return;
+			}
 
-			Console.Write("Digite o valor a ser sacado: ");
-			double valorSaque = double.Parse(Console.ReadLine());
+			int indiceConta = ObterOpcaoInteiro("Digite o número da conta: ");
+
+			if(!ValidarConta(indiceConta))
+				return;
+
+			double valorSaque = ObterOpcaoDouble("Digite o valor a ser sacado: ");
 
             listContas[indiceConta].Sacar(valorSaque);
         }
@@ -83,9 +103,8 @@ namespace DIO.Bank
         {
             Console.WriteLine("Listar contas");
 
-			if (listContas.Count == 0)
+			if(!VerificarListaContas())
 			{
-				Console.WriteLine("Nenhuma conta cadastrada.");
 				return;
 			}
 
@@ -99,19 +118,31 @@ namespace DIO.Bank
 
         private static void InserirConta()
         {
+			int entradaTipoConta;
+			double entradaSaldo;
+			double entradaCredito;
+
             Console.WriteLine("Inserir nova conta");
 
-			Console.Write("Digite 1 para Conta Fisica ou 2 para Juridica: ");
-			int entradaTipoConta = int.Parse(Console.ReadLine());
+			do
+			{
+				entradaTipoConta = ObterOpcaoInteiro("Digite 1 para Conta Fisica ou 2 para Juridica: ");
+			} while (entradaTipoConta != 1 && entradaTipoConta != 2);
+			
 
 			Console.Write("Digite o Nome do Cliente: ");
 			string entradaNome = Console.ReadLine();
 
-			Console.Write("Digite o saldo inicial: ");
-			double entradaSaldo = double.Parse(Console.ReadLine());
-
-			Console.Write("Digite o crédito: ");
-			double entradaCredito = double.Parse(Console.ReadLine());
+			do
+			{
+				entradaSaldo = ObterOpcaoDouble("Digite o saldo inicial: ");
+			} while (entradaSaldo < 0);
+			
+			do
+			{
+				entradaCredito = ObterOpcaoDouble("Digite o crédito: ");
+			} while (entradaCredito < 0);
+			
 
 			Conta novaConta = new Conta(tipoConta: (TipoConta)entradaTipoConta,
 										saldo: entradaSaldo,
@@ -140,6 +171,67 @@ namespace DIO.Bank
             Console.WriteLine();
             return opcaoUsuario;
         }
+
+		private static int ObterOpcaoInteiro(string mensagem)
+		{
+			int opcaoInteiro;
+			do
+			{
+				Console.Write(mensagem);
+				try
+				{
+					opcaoInteiro = int.Parse(Console.ReadLine());
+					return opcaoInteiro;
+				}
+				catch (System.Exception)
+				{
+					Console.WriteLine("Você não digitou um número válido. Tente novamente");
+				}
+			} while (true);
+		}
+
+		private static double ObterOpcaoDouble(string mensagem)
+		{
+			double opcaoDouble;
+			do
+			{
+				Console.Write(mensagem);
+				try
+				{
+					opcaoDouble = double.Parse(Console.ReadLine().Replace('.', ','));
+					return opcaoDouble;
+				}
+				catch (System.Exception)
+				{
+					Console.WriteLine("Você não digitou um número válido. Tente novamente");
+				}
+			} while (true);
+		}
+
+		private static bool ValidarConta(int numeroConta)
+        {
+			for (int i = 0; i < listContas.Count; i++)
+			{
+				if(numeroConta == i)
+				{
+					Console.Write($"#{i} - ");
+					Console.WriteLine(listContas[i]);
+					return true;
+				}
+			}
+			Console.WriteLine("A conta não existe");
+			return false;
+        }
+
+		private static bool VerificarListaContas()
+		{
+			if (listContas.Count == 0)
+			{
+				Console.WriteLine("Nenhuma conta cadastrada.");
+				return false;
+			}
+			return true;
+		}
 
 
     }
