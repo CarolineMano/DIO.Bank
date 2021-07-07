@@ -25,14 +25,14 @@ namespace DIO.Bank
                 return false;
             }
             this.Saldo -= valorSaque;
-            Console.WriteLine($"Saldo atual da conta de {this.Nome} é {this.Saldo}");
+            Console.WriteLine($"Saldo atual da conta de {this.Nome} é R$ {this.Saldo}");
             return true;
         }
 
         public void Depositar(double valorDeposito)
         {
             this.Saldo += valorDeposito;
-            Console.WriteLine($"Saldo atual da conta de {this.Nome} é {this.Saldo}");
+            Console.WriteLine($"Saldo atual da conta de {this.Nome} é R$ {this.Saldo}");
         }
 
         public void Transferir(double valorTransferencia, Conta contaDestino)
